@@ -8,7 +8,7 @@ export const getSavingsProducts = async () => {
     return response;
   } catch (error) {
     if (isHttpError(error)) {
-      console.error(error.status, error.data);
+      throw new Error('적금 상품을 불러오는 데 실패했어요.');
     }
     throw error;
   }
