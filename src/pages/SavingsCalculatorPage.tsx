@@ -16,6 +16,10 @@ import { SavingsProduct } from 'types/response';
 
 export function SavingsCalculatorPage() {
   const [savingsProducts, setSavingsProducts] = useState<SavingsProduct[]>([]);
+  const [targetAmount, setTargetAmount] = useState<number>(0);
+  const [monthlyPayment, setMonthlyPayment] = useState<number>(0);
+  const [selectedTerm, setSelectedTerm] = useState<number>(12);
+  const [selectedProduct, setSelectedProduct] = useState<SavingsProduct | null>(null); //TODO 얘는 파생상태인디?
 
   const fetchSavingsProducts = async () => {
     const response = await getSavingsProducts();
@@ -26,17 +30,60 @@ export function SavingsCalculatorPage() {
     fetchSavingsProducts();
   }, []);
 
+  const handleTargetAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTargetAmount(Number(e.target.value.replace(/,/g, '')));
+    console.log(targetAmount);
+    //TODO string 입력 시 입력 안되게 해야함.
+  };
+
+  const handleMonthlyPaymentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMonthlyPayment(Number(e.target.value.replace(/,/g, '')));
+  };
+
+  const handleSelectedTermChange = (value: number) => {
+    setSelectedTerm(value);
+  };
+
+  const handleSelectProduct = (product: SavingsProduct) => {
+    setSelectedProduct(product);
+  };
+
+  const isProductValid = (product: SavingsProduct) => {
+    return (
+      monthlyPayment >= product.minMonthlyAmount &&
+      monthlyPayment <= product.maxMonthlyAmount &&
+      selectedTerm === product.availableTerms
+    );
+  };
+
   return (
     <>
       <NavigationBar title="적금 계산기" />
 
       <Spacing size={16} />
 
-      <TextField label="목표 금액" placeholder="목표 금액을 입력하세요" suffix="원" />
+      <TextField
+        label="목표 금액"
+        placeholder="목표 금액을 입력하세요"
+        suffix="원"
+        value={targetAmount.toLocaleString()}
+        onChange={handleTargetAmountChange}
+      />
       <Spacing size={16} />
-      <TextField label="월 납입액" placeholder="희망 월 납입액을 입력하세요" suffix="원" />
+      <TextField
+        label="월 납입액"
+        placeholder="희망 월 납입액을 입력하세요"
+        suffix="원"
+        value={monthlyPayment.toLocaleString()}
+        onChange={handleMonthlyPaymentChange}
+      />
       <Spacing size={16} />
-      <SelectBottomSheet label="저축 기간" title="저축 기간을 선택해주세요" value={12} onChange={() => {}}>
+      <SelectBottomSheet
+        label="저축 기간"
+        title="저축 기간을 선택해주세요"
+        value={selectedTerm}
+        onChange={handleSelectedTermChange}
+      >
         <SelectBottomSheet.Option value={6}>6개월</SelectBottomSheet.Option>
         <SelectBottomSheet.Option value={12}>12개월</SelectBottomSheet.Option>
         <SelectBottomSheet.Option value={24}>24개월</SelectBottomSheet.Option>
@@ -55,7 +102,7 @@ export function SavingsCalculatorPage() {
         </Tab.Item>
       </Tab>
 
-      {savingsProducts.map(product => (
+      {savingsProducts.filter(isProductValid).map(product => (
         <ListRow
           key={product.id}
           contents={
@@ -69,7 +116,10 @@ export function SavingsCalculatorPage() {
               bottomProps={{ fontSize: 13, color: colors.grey600 }}
             />
           }
-          onClick={() => {}}
+          onClick={() => {
+            handleSelectProduct(product);
+          }}
+          right={selectedProduct?.id === product.id ? <Assets.Icon name="icon-check-circle-green" /> : undefined}
         />
       ))}
 
@@ -117,7 +167,7 @@ export function SavingsCalculatorPage() {
       <ListHeader title={<ListHeader.TitleParagraph fontWeight="bold">추천 상품 목록</ListHeader.TitleParagraph>} />
       <Spacing size={12} />
 
-      <ListRow
+      {/* <ListRow
         contents={
           <ListRow.Texts
             type="3RowTypeA"
@@ -144,12 +194,12 @@ export function SavingsCalculatorPage() {
           />
         }
         onClick={() => {}}
-      />
+      /> */}
 
       <Spacing size={40} />
 
       {/* 아래는 사용자가 적금 상품을 선택하지 않고 계산 결과 탭을 선택했을 때 출력해주세요. */}
-      <ListRow contents={<ListRow.Texts type="1RowTypeA" top="상품을 선택해주세요." />} />
+      {/* <ListRow contents={<ListRow.Texts type="1RowTypeA" top="상품을 선택해주세요." />} /> */}
     </>
   );
 }
