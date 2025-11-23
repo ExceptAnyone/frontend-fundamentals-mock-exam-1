@@ -1,13 +1,13 @@
-import { SAVINGS_TERM_LABELS, SAVINGS_TERM_OPTIONS } from 'constants/savings';
+import { SAVINGS_TERM_LABELS, SAVINGS_TERM_OPTIONS, SavingsTerm } from 'constants/savings';
 import { SelectBottomSheet, Spacing, TextField } from 'tosslib';
 
 interface InputFormProps {
   targetAmount: number;
   monthlyPayment: number;
-  selectedTerm: number;
+  selectedTerm: SavingsTerm;
   onTargetAmountChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onMonthlyPaymentChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onSelectedTermChange: (value: number) => void;
+  onSelectedTermChange: (value: SavingsTerm) => void;
 }
 
 export function InputForm({

@@ -1,17 +1,17 @@
-import { DEFAULT_SAVINGS_TERM } from 'constants/savings';
+import { DEFAULT_SAVINGS_TERM, SavingsTerm } from 'constants/savings';
 import { useState, useCallback } from 'react';
 
 interface FormInputState {
   targetAmount: number;
   monthlyPayment: number;
-  selectedTerm: number;
+  selectedTerm: SavingsTerm;
 }
 
 export function useFormInput(initialState?: Partial<FormInputState>) {
   const [formState, setFormState] = useState<FormInputState>({
     targetAmount: initialState?.targetAmount ?? 0,
     monthlyPayment: initialState?.monthlyPayment ?? 0,
-    selectedTerm: initialState?.selectedTerm ?? DEFAULT_SAVINGS_TERM,
+    selectedTerm: initialState?.selectedTerm ?? (DEFAULT_SAVINGS_TERM as SavingsTerm),
   });
 
   const handleTargetAmountChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -24,7 +24,7 @@ export function useFormInput(initialState?: Partial<FormInputState>) {
     setFormState(prev => ({ ...prev, monthlyPayment: value }));
   }, []);
 
-  const handleSelectedTermChange = useCallback((value: number) => {
+  const handleSelectedTermChange = useCallback((value: SavingsTerm) => {
     setFormState(prev => ({ ...prev, selectedTerm: value }));
   }, []);
 
